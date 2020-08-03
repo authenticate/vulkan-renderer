@@ -1,12 +1,10 @@
 #include "inexor/vulkan-renderer/wrapper/texture.hpp"
-
-#include "inexor/vulkan-renderer/wrapper/info.hpp"
 #include "inexor/vulkan-renderer/wrapper/staging_buffer.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <spdlog/spdlog.h>
 #include <stb_image.h>
-#include <vma/vma_usage.h>
+#include <vma/vk_mem_alloc.h>
 
 namespace inexor::vulkan_renderer::wrapper {
 
@@ -19,10 +17,12 @@ Texture::Texture(Texture &&other) noexcept
       texture_image_format(other.texture_image_format), copy_command_buffer(std::move(other.copy_command_buffer)) {}
 
 Texture::Texture(const VkDevice device, const VkPhysicalDevice graphics_card, const VmaAllocator vma_allocator,
-                 void *texture_data, const std::size_t texture_size, const std::string &name,
-                 const VkQueue data_transfer_queue, const std::uint32_t data_transfer_queue_family_index)
+                 void *texture_data, const int texture_width, const int texture_height, const std::size_t texture_size,
+                 const std::string &name, const VkQueue data_transfer_queue,
+                 const std::uint32_t data_transfer_queue_family_index)
     : name(name), file_name(file_name), device(device), graphics_card(graphics_card),
-      data_transfer_queue(data_transfer_queue), vma_allocator(vma_allocator),
+      data_transfer_queue_family_index(data_transfer_queue_family_index), data_transfer_queue(data_transfer_queue),
+      vma_allocator(vma_allocator), texture_width(texture_width), texture_height(texture_height),
       copy_command_buffer(device, data_transfer_queue, data_transfer_queue_family_index) {
 
     create_texture(texture_data, texture_size);
@@ -66,6 +66,9 @@ Texture::Texture(const VkDevice device, const VkPhysicalDevice graphics_card, co
 
 void Texture::create_texture(void *texture_data, const std::size_t texture_size) {
 
+    assert(texture_width > 0);
+    assert(texture_height > 0);
+
     // For now, we will not generate mip-maps automatically.
     // TODO: Generate mip-maps automatically!
     mip_levels = 1;
@@ -90,7 +93,7 @@ void Texture::create_texture(void *texture_data, const std::size_t texture_size)
     transition_image_layout(texture_image->get(), texture_image_format, VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-    VkBufferImageCopy buffer_image_region{};
+    VkBufferImageCopy buffer_image_region = {};
 
     buffer_image_region.bufferOffset = 0;
     buffer_image_region.bufferRowLength = 0;
@@ -118,7 +121,9 @@ void Texture::create_texture(void *texture_data, const std::size_t texture_size)
 void Texture::transition_image_layout(VkImage image, VkFormat format, VkImageLayout old_layout,
                                       VkImageLayout new_layout) {
 
-    auto barrier = make_info<VkImageMemoryBarrier>();
+    VkImageMemoryBarrier barrier = {};
+
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     barrier.oldLayout = old_layout;
     barrier.newLayout = new_layout;
     barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
@@ -164,7 +169,8 @@ void Texture::transition_image_layout(VkImage image, VkFormat format, VkImageLay
 }
 
 void Texture::create_texture_sampler() {
-    auto sampler_ci = make_info<VkSamplerCreateInfo>();
+    VkSamplerCreateInfo sampler_ci = {};
+    sampler_ci.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     sampler_ci.magFilter = VK_FILTER_LINEAR;
     sampler_ci.minFilter = VK_FILTER_LINEAR;
     sampler_ci.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;

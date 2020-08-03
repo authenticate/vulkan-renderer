@@ -13,6 +13,8 @@ set(SOURCE_FILES
     vulkan-renderer/thread_pool.cpp
     vulkan-renderer/time_step.cpp
 
+    vulkan-renderer/imgui/imgui_overlay.cpp
+
     vulkan-renderer/io/byte_stream.cpp
     vulkan-renderer/io/octree_parser.cpp
 

@@ -263,4 +263,217 @@ VkSwapchainCreateInfoKHR make_info() {
     return ret;
 }
 
+template <>
+VkDescriptorPoolSize make_info(VkDescriptorType type, uint32_t descriptorCount) {
+    VkDescriptorPoolSize ret{};
+    ret.type = type;
+    ret.descriptorCount = descriptorCount;
+    return ret;
+}
+
+template <>
+VkDescriptorPoolCreateInfo make_info(const std::vector<VkDescriptorPoolSize> &poolSizes, uint32_t maxSets) {
+    VkDescriptorPoolCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    ret.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+    ret.pPoolSizes = poolSizes.data();
+    ret.maxSets = maxSets;
+    return ret;
+}
+
+template <>
+VkDescriptorSetLayoutBinding make_info(VkDescriptorType type, VkShaderStageFlags stageFlags, uint32_t binding,
+                                       uint32_t descriptorCount) {
+    VkDescriptorSetLayoutBinding ret{};
+    ret.descriptorType = type;
+    ret.stageFlags = stageFlags;
+    ret.binding = binding;
+    ret.descriptorCount = descriptorCount;
+    return ret;
+}
+
+template <>
+VkDescriptorSetLayoutCreateInfo make_info(const std::vector<VkDescriptorSetLayoutBinding> &bindings) {
+    VkDescriptorSetLayoutCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    ret.pBindings = bindings.data();
+    ret.bindingCount = static_cast<uint32_t>(bindings.size());
+    return ret;
+}
+
+template <>
+VkDescriptorSetAllocateInfo make_info(VkDescriptorPool descriptorPool, const VkDescriptorSetLayout *pSetLayouts,
+                                      uint32_t descriptorSetCount) {
+    VkDescriptorSetAllocateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    ret.descriptorPool = descriptorPool;
+    ret.pSetLayouts = pSetLayouts;
+    ret.descriptorSetCount = descriptorSetCount;
+    return ret;
+}
+
+template <>
+VkDescriptorImageInfo make_info(VkSampler sampler, VkImageView imageView, VkImageLayout imageLayout) {
+    VkDescriptorImageInfo ret{};
+    ret.sampler = sampler;
+    ret.imageView = imageView;
+    ret.imageLayout = imageLayout;
+    return ret;
+}
+
+template <>
+VkWriteDescriptorSet make_info(VkDescriptorSet dstSet, VkDescriptorType type, uint32_t binding,
+                               VkDescriptorBufferInfo *bufferInfo, uint32_t descriptorCount) {
+    VkWriteDescriptorSet ret{};
+    ret.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    ret.dstSet = dstSet;
+    ret.descriptorType = type;
+    ret.dstBinding = binding;
+    ret.pBufferInfo = bufferInfo;
+    ret.descriptorCount = descriptorCount;
+    return ret;
+}
+
+template <>
+VkWriteDescriptorSet make_info(VkDescriptorSet dstSet, VkDescriptorType type, uint32_t binding,
+                               VkDescriptorImageInfo *imageInfo, uint32_t descriptorCount) {
+    VkWriteDescriptorSet ret{};
+    ret.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    ret.dstSet = dstSet;
+    ret.descriptorType = type;
+    ret.dstBinding = binding;
+    ret.pImageInfo = imageInfo;
+    ret.descriptorCount = descriptorCount;
+    return ret;
+}
+
+template <>
+VkPushConstantRange make_info(VkShaderStageFlags stageFlags, uint32_t size, uint32_t offset) {
+    VkPushConstantRange ret{};
+    ret.stageFlags = stageFlags;
+    ret.offset = offset;
+    ret.size = size;
+    return ret;
+}
+
+template <>
+VkPipelineLayoutCreateInfo make_info(const VkDescriptorSetLayout *pSetLayouts, uint32_t setLayoutCount) {
+    VkPipelineLayoutCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    ret.setLayoutCount = setLayoutCount;
+    ret.pSetLayouts = pSetLayouts;
+    return ret;
+}
+
+template <>
+VkPipelineInputAssemblyStateCreateInfo make_info(VkPrimitiveTopology topology,
+                                                 VkPipelineInputAssemblyStateCreateFlags flags,
+                                                 VkBool32 primitiveRestartEnable) {
+    VkPipelineInputAssemblyStateCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    ret.topology = topology;
+    ret.flags = flags;
+    ret.primitiveRestartEnable = primitiveRestartEnable;
+    return ret;
+}
+
+template <>
+VkPipelineRasterizationStateCreateInfo make_info(VkPolygonMode polygonMode, VkCullModeFlags cullMode,
+                                                 VkFrontFace frontFace, VkPipelineRasterizationStateCreateFlags flags) {
+    VkPipelineRasterizationStateCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    ret.polygonMode = polygonMode;
+    ret.cullMode = cullMode;
+    ret.frontFace = frontFace;
+    ret.flags = flags;
+    ret.depthClampEnable = VK_FALSE;
+    ret.lineWidth = 1.0f;
+    return ret;
+}
+
+template <>
+VkPipelineColorBlendStateCreateInfo make_info(uint32_t attachmentCount,
+                                              const VkPipelineColorBlendAttachmentState *pAttachments) {
+    VkPipelineColorBlendStateCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    ret.attachmentCount = attachmentCount;
+    ret.pAttachments = pAttachments;
+    return ret;
+}
+
+template <>
+VkPipelineDepthStencilStateCreateInfo make_info(VkBool32 depthTestEnable, VkBool32 depthWriteEnable,
+                                                VkCompareOp depthCompareOp) {
+    VkPipelineDepthStencilStateCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    ret.depthTestEnable = depthTestEnable;
+    ret.depthWriteEnable = depthWriteEnable;
+    ret.depthCompareOp = depthCompareOp;
+    ret.back.compareOp = VK_COMPARE_OP_ALWAYS;
+    return ret;
+}
+
+template <>
+VkPipelineViewportStateCreateInfo make_info(uint32_t viewportCount, uint32_t scissorCount,
+                                            VkPipelineViewportStateCreateFlags flags) {
+    VkPipelineViewportStateCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    ret.viewportCount = viewportCount;
+    ret.scissorCount = scissorCount;
+    ret.flags = flags;
+    return ret;
+}
+
+template <>
+VkPipelineMultisampleStateCreateInfo make_info(VkSampleCountFlagBits rasterizationSamples,
+                                               VkPipelineMultisampleStateCreateFlags flags) {
+    VkPipelineMultisampleStateCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    ret.rasterizationSamples = rasterizationSamples;
+    ret.flags = flags;
+    return ret;
+}
+
+template <>
+VkPipelineDynamicStateCreateInfo make_info(const std::vector<VkDynamicState> &pDynamicStates,
+                                           VkPipelineDynamicStateCreateFlags flags) {
+    VkPipelineDynamicStateCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    ret.pDynamicStates = pDynamicStates.data();
+    ret.dynamicStateCount = static_cast<uint32_t>(pDynamicStates.size());
+    ret.flags = flags;
+    return ret;
+}
+
+template <>
+VkGraphicsPipelineCreateInfo make_info(VkPipelineLayout layout, VkRenderPass renderPass, VkPipelineCreateFlags flags) {
+    VkGraphicsPipelineCreateInfo ret{};
+    ret.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    ret.layout = layout;
+    ret.renderPass = renderPass;
+    ret.flags = flags;
+    ret.basePipelineIndex = -1;
+    ret.basePipelineHandle = VK_NULL_HANDLE;
+    return ret;
+}
+
+template <>
+VkVertexInputBindingDescription make_info(uint32_t binding, uint32_t stride, VkVertexInputRate inputRate) {
+    VkVertexInputBindingDescription ret{};
+    ret.binding = binding;
+    ret.stride = stride;
+    ret.inputRate = inputRate;
+    return ret;
+}
+
+template <>
+VkVertexInputAttributeDescription make_info(uint32_t binding, uint32_t location, VkFormat format, uint32_t offset) {
+    VkVertexInputAttributeDescription ret{};
+    ret.location = location;
+    ret.binding = binding;
+    ret.format = format;
+    ret.offset = offset;
+    return ret;
+}
+
 } // namespace inexor::vulkan_renderer::wrapper

@@ -9,8 +9,6 @@
 #include "inexor/vulkan-renderer/octree_gpu_vertex.hpp"
 #include "inexor/vulkan-renderer/settings_decision_maker.hpp"
 #include "inexor/vulkan-renderer/time_step.hpp"
-
-// Those components have been refactored to fulfill RAII idioms.
 #include "inexor/vulkan-renderer/wrapper/command_buffer.hpp"
 #include "inexor/vulkan-renderer/wrapper/command_pool.hpp"
 #include "inexor/vulkan-renderer/wrapper/descriptor.hpp"
@@ -39,9 +37,6 @@ namespace inexor::vulkan_renderer {
 
 class VulkanRenderer {
 protected:
-    // We try to avoid inheritance here and prefer a composition pattern.
-    // TODO: VulkanSwapchainManager, VulkanPipelineManager, VulkanRenderPassManager?
-
     std::shared_ptr<VulkanGraphicsCardInfoViewer> gpu_info_manager = std::make_shared<VulkanGraphicsCardInfoViewer>();
 
     std::shared_ptr<AvailabilityChecksManager> availability_checks_manager =

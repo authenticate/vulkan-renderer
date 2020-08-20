@@ -7,6 +7,7 @@
 
 namespace inexor::vulkan_renderer::wrapper {
 
+// TODO() Implement sub-types of shaders (vertex shaders..)
 class Shader {
 private:
     const wrapper::Device &m_device;

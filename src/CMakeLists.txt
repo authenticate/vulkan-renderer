@@ -12,6 +12,9 @@ set(SOURCE_FILES
     vulkan-renderer/settings_decision_maker.cpp
     vulkan-renderer/time_step.cpp
 
+    vulkan-renderer/imgui/imgui.cpp
+	vulkan-renderer/imgui/vks.cpp
+
     vulkan-renderer/io/byte_stream.cpp
     vulkan-renderer/io/octree_parser.cpp
 
